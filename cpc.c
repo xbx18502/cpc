@@ -661,10 +661,17 @@ void write_as() {
     fd = open("assemble", 0x0001 | 0x0200);
     buffer = malloc(100);
     while (code_dump < code) {
-        sprintf(buffer, "(%lld) %8.4s", ++code_dump, insts + (*code_dump * 5));
+        code_dump++;
+        sprintf(buffer, "(%lld) %8.4s", code_dump, insts + (*code_dump * 5));
         write(fd, buffer, strlen(buffer));
-        if (*code_dump < RET) sprintf(buffer, " %lld\n", *++code_dump);
-        else {buffer[0] = '\n'; buffer[1] = '\0';}
+        // 处理指令参数
+        if (*code_dump< RET) {
+            ++code_dump;  // 先获取下一个指针
+            sprintf(buffer, " %lld\n", *code_dump);
+        } else {
+            buffer[0] = '\n';
+            buffer[1] = '\0';
+        }
         write(fd, buffer, strlen(buffer));
     }
     close(fd);
